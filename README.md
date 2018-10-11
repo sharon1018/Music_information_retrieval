@@ -5,10 +5,12 @@ By Elaine Chew and Yun-Ching Chen
 </br> Link: https://www.mitpressjournals.org/doi/pdf/10.1162/0148926054094378
 
 Data format:
--- WAV files
+- WAV files
+- STFT = 1024
 Current steps:
-- Onset detection
-- Get pitch
-- Chord matching
+- Feature extraction
+  - Onset detection
+  - Get pitch
+  - Chord matching
 - Analysis
 
