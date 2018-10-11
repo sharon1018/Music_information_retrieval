@@ -8,11 +8,11 @@
  Link: https://musicinformationretrieval.com/
 </br> Video: https://www.youtube.com/watch?v=oGGVvTgHMHw
 
-Data format:
+#### Data format:
 - WAV files
 - STFT = 1024
 
-Current steps:
+#### Steps:
 - Feature extraction
   - Onset detection
   - Get pitch
