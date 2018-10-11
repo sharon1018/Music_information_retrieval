@@ -19,5 +19,5 @@
   - Chord matching
 - Analysis
   - Chord progression
-  - pitch variation
+  - Pitch variation
 
