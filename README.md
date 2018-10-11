@@ -1,11 +1,11 @@
 # Music_information_retrieval
 
 ### Ref Paper: Real-Time Pitch Spelling Using the Spiral Array. 
-</br> Link: https://www.mitpressjournals.org/doi/pdf/10.1162/0148926054094378
+ Link: https://www.mitpressjournals.org/doi/pdf/10.1162/0148926054094378
 </br> Video: https://www.youtube.com/watch?v=4GPwVNPuKuA&t=156s
 
 ### Standford music information retrieval
-</br> Link: https://musicinformationretrieval.com/
+ Link: https://musicinformationretrieval.com/
 </br> Video: https://www.youtube.com/watch?v=oGGVvTgHMHw
 
 Data format:
