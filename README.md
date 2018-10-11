@@ -7,7 +7,8 @@ By Elaine Chew and Yun-Ching Chen
 Data format:
 - WAV files
 - STFT = 1024
-Current steps:
+
+</br> Current steps:
 - Feature extraction
   - Onset detection
   - Get pitch
