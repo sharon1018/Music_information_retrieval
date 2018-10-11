@@ -8,10 +8,12 @@ Data format:
 - WAV files
 - STFT = 1024
 
-</br> Current steps:
+Current steps:
 - Feature extraction
   - Onset detection
   - Get pitch
   - Chord matching
 - Analysis
+  - Chord progression
+  - pitch variation
 
