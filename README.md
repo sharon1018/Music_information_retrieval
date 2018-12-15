@@ -20,4 +20,9 @@
 - Analysis
   - Chord progression
   - Pitch variation
+  
+  
+ #### Tools
+ - Init_chrommo.py
+ - Parsing_midi.py
 
