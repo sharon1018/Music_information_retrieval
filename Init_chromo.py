@@ -1,10 +1,11 @@
 ## Initialize - Generate chromosome
 """
-input: midi sequence (16 sec ~ 4 phrases)
+input: midi sequence (4 bar)
 - shift_note
 - merge_duplicate_note
 - extend_duration
 """
+
 import mido
 from mido import Message, MidiFile, MidiTrack
 import copy
@@ -31,20 +32,19 @@ def merge_duplicate_note(song):
     return temp
 
  # 延長長度過短的音
-def extend_duration(song):
+def change_duration(song, src, trgt, MAX): # one beat = 480
     # get threshold
     duration_list = []
     for i in range(len(song)):
         duration_list.append(song[i].time)
-        max_freq = Counter(duration_list).most_common()[0][0]
-        threshold = max_freq  if max_freq != 1 else Counter(duration_list).most_common()[1][0] ##??? midi FORMMAT不太一樣要再看看
-    print(threshold)    
-    # extend the duration of the note    
+    # # extend the duration of the note    
     temp = copy.deepcopy(song)
-    for i in range(len(song)):
-        if temp[i].time < threshold and temp[i].velocity == 0:
-#             print(i)
-            temp[i].time = threshold
+    count = 0
+    for i in range(len(song)-1):
+        if temp[i].velocity != 0 and temp[i].time + temp[i+1].time == src:
+            if count <= MAX:
+                temp[i+1].time = trgt - temp[i].time
+                count += 1
     return temp
    
     
