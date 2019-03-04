@@ -20,9 +20,10 @@ def get_midi(filename, track=0):
    ## read midi file
     mid = MidiFile(filename)
     ## get midi information
-    temp=[]
-    for msg in mid.tracks[track]:
-        temp.append(msg)
+#     temp=[]
+#     for msg in mid.tracks[track]:
+#         temp.append(msg)
+    temp = [msg for msg in mid.tracks[track]]
     ## only extract note_on and note_off
     midi_list = []
     for i in range(len(temp)):
@@ -48,19 +49,32 @@ def parse_midi(data):
 
     return midi_data
 
-def separate_phrase(base, midi_list, threshold):
-    start = midi_list[0].time % 1920
-    midi_list[0].time = start + base
+## seperate midi input into bars
+def separate_song(song, threshold):
+    a = song
+    time = 0; t = []; t2 = []; n = []; n2 = []
+    for i in range(len(a)):
+        if i%2 == 0:
+            time += a[i].time 
+            time += a[i+1].time
+            if time < threshold + 5:
+                t.append(a[i])
+                t.append(a[i+1])
+                n.append(a[i].note%12)
+                n.append(a[i+1].note%12)
 
-    count = 0; mid = []; temp = []
-    for i in range(len(midi_list)):
-        count += midi_list[i].time
-        if count <= threshold:  
-            temp.append(midi_list[i])
-        else:
-            temp.append(midi_list[i])
-            mid.append(temp)
-            count = 0
-            temp = [] 
-    return mid
+            elif time > threshold + 10:
+                t2.append(t)  # sepatate bar
+                n2.append(n)  # index of note
+                ## reset
+                time = 0 
+                time += a[i].time 
+                time += a[i+1].time
+                t = []
+                n = []
+                t.append(a[i])
+                t.append(a[i+1])
+                n.append(a[i].note%12)
+                n.append(a[i+1].note%12)
+    return n2, t2
 

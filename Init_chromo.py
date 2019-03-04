@@ -4,19 +4,20 @@ input: midi sequence (4 bar)
 - shift_note
 - merge_duplicate_note
 - extend_duration
+- add_note
+- delete_note
 """
 
 import mido
 from mido import Message, MidiFile, MidiTrack
 import copy
 from collections import Counter
+import random
 
  # 移調
 def shift_note(song, interval):
     temp = copy.deepcopy(song)
-    for i in range(len(temp)):
-        temp[i].note = temp[i].note + interval
-    return temp
+    return [temp[i].note + interval for i in range(len(temp))]
 
  # 重複的切分音直接轉為連音
 def merge_duplicate_note(song): 
@@ -34,10 +35,8 @@ def merge_duplicate_note(song):
  # 延長長度過短的音
 def change_duration(song, src, trgt, MAX): # one beat = 480
     # get threshold
-    duration_list = []
-    for i in range(len(song)):
-        duration_list.append(song[i].time)
-    # # extend the duration of the note    
+    duration_list = [song[i].time for i in range(len(song))]
+    # extend the duration of the note    
     temp = copy.deepcopy(song)
     count = 0
     for i in range(len(song)-1):
@@ -48,14 +47,21 @@ def change_duration(song, src, trgt, MAX): # one beat = 480
     return temp
    
     
-    # ## 移除過短的音
-# def remove_short_note(song):
-    
-#     return 
+ # 增加裝飾音
+def add_note(song, interval, duration):
+    position = 1
+    while position % 2 != 0:
+        position = random.randint(0,len(song)-1)
+    _note = song[position].note
+    song.insert(position, (mido.Message('note_on', note = _note + interval , time = 1)))
+    song.insert(position + 1, (mido.Message('note_on', note = _note + interval, time = duration)))
+    return song
 
-# # def change_tempo(song, tempo):
-
-# ## 增加裝飾音
-# def add_note(song, position, interval):
-    
-#     return
+# 移除某些音
+def remove_note(song, delete_threshold):
+    position = 1
+    while position % 2 != 0 and song[position+1].time < delete_threshold:
+        position = random.randint(0,len(song)-1)
+    del song[position]
+    del song[position]
+    return song
