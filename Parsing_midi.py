@@ -76,5 +76,9 @@ def separate_song(song, threshold):
                 t.append(a[i+1])
                 n.append(a[i].note%12)
                 n.append(a[i+1].note%12)
+         # 不滿threshold都補齊
+        if i == len(a) - 2:
+            t2.append(t)  # sepatate bar
+            n2.append(n)  # index of note
     return n2, t2
 
