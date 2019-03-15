@@ -82,3 +82,15 @@ def separate_song(song, threshold):
             n2.append(n)  # index of note
     return n2, t2
 
+
+def to_midi_file(inputfile, program, outputfile):
+    ## initialize
+    mid = MidiFile()
+    track = MidiTrack()
+    mid.tracks.append(track)
+    ## add message
+    track.append(Message('program_change', program=program, time=0))
+    for i in range(len(inputfile)):
+        track.append(Message('note_on', note=inputfile[i].note, velocity=inputfile[i].velocity, time=inputfile[i].time))
+    mid.save(outputfile)
+    return True
