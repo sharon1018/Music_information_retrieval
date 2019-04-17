@@ -66,6 +66,28 @@ def get_note(note):
     return int(change_note)
 
 
+# 決定和諧音
+def get_chord(note):
+    choice_list = [4, 3, -3, -4]
+    if note % 12 == 0: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0.5,0,0.5,0])
+    elif note % 12 == 2: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0.5,0])
+    elif note % 12 == 4: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0,0.5])
+    elif note % 12 == 5: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0.5,0,0.5,0])
+    elif note % 12 == 7: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0.5,0,0.5,0])
+    elif note % 12 == 9: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0,0.5])
+    elif note % 12 == 11: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0,0.5])
+    else:
+        change_note = 0
+    return int(change_note)
+
+
 # 移除某些音
 def remove_note(song):
     temp = copy.deepcopy(song)
@@ -100,7 +122,20 @@ def add_note(song, duration, num):
             elif i+position-5 < len(temp)-1 and temp[i+position-5].time > duration :
                 temp[i+position-5].time -= duration  # 前2個音時間要減短  
             else:
-                temp = remove_note(temp)
-            
+                temp = remove_note(temp)     
+    return temp
+
+# 新增一和絃
+def add_chord(song):
+    temp = copy.deepcopy(song)
+    # for i in range(num):
+    position = 1 # initial
+    while position % 2 != 0:
+        position = random.randint(0,len(temp)-1)
+    _note = temp[position].note
+    interval = get_chord(_note)
+    if interval != 0:
+        temp.insert(position + 1, (mido.Message('note_on', velocity = 100, note = _note + interval , time = 0)))
+        temp.insert(position + 3, (mido.Message('note_on', velocity = 0, note = _note + interval, time = 0)))
     return temp
 
