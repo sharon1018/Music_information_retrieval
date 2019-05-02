@@ -74,24 +74,21 @@ def count_area_score(ori_midi, new_midi, smooth_curve=True):  # smooth
 
     if smooth_curve:
         area_diff = count_area(y_s1, y_s2)
-#         print("smooth",area_diff)
-        if area_diff > 0 and area_diff <= 90:
-            score -= (area_diff / 10 * 2)
-        if area_diff > 0 and area_diff <= 65:
-            score += 15
-        elif area_diff > 90:
-            score -= 30 
+#         if area_diff > 0 and area_diff <= 90:
+        score = -(area_diff / 10 * 2)
+
+#         elif area_diff > 90:
+#             score -= 30 
     else:  
         area_diff = count_area(y, y2)
-#         print("not smooth", area_diff)
-        if area_diff > 0 and area_diff <= 70:
-            score += (area_diff / 10 * 3)
+        if area_diff > 0 and area_diff <= 20:
+            score = (area_diff / 10 * 3)
             
 #         elif area_diff > 60 and area_diff <= 70:
 #             score += 10
 #         elif area_diff > 50 and area_diff <= 60:
 #             score += 8
         else:
-            score += 0 
+            score = (area_diff / 10 * 2)
     return score
 
