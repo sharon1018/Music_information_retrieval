@@ -9,77 +9,156 @@ harmony = [[0,2,4,7,-3,-5,-1], [0], [0,5,-2,-3,-7,2,3],[0], [0,3,1,-4,-2,-7], [0
 surprise_list = [1,3,6,8,10]
 
 def ce_score(CE, CE_):
-    score_ce = 0  
-    dist = ce.count_distance(CE, CE_)   
-    if dist == 0.0:  # the chord remain
-        score_ce = 100
-    elif dist > 0 and dist <= 2:
-        score_ce = 100-5*(dist)
-    elif dist > 2 and dist <= 4:
-        score_ce = 100-7*(dist)
-    elif dist > 4 :
-        score_ce = 100-9*(dist)
-    else:
-        print("NONE")
+    score_ce = 0     
+    for i in range(len(CE)):
+        try:
+            dist = ce.count_distance(CE[i], CE_[i]) 
+            if dist == 0.0:  # the chord remain
+                score_ce += 100
+            elif dist > 0 and dist <= 2:
+                score_ce += 40*(dist)
+            elif dist > 2 and dist <= 4:
+                score_ce += 10*(dist)
+            elif dist > 4 :
+                score_ce -= 5*(dist)
+        except:
+            pass
     return score_ce
 
-def harmony_score(midi_msg, chord, ori_note): 
+
+def harmony_score(midi_msg, chord): 
     score_harmony = 0
     
     ## get chord note, ie: C major is CEG
     c = int(list(chord)[2])
+#     print("c", c)
     if c % 12 in C_pitch:
         chord = chord_list[c % 12]
-    elif (c + 1) % 12 in C_pitch:
+    elif c -int(c)>0.5 and (c + 1) % 12 in C_pitch:
         chord = chord_list[(c + 1) % 12]
-    elif (c - 1) % 12 in C_pitch:
+    elif c -int(c)<0.5 and (c - 1) % 12 in C_pitch:
         chord = chord_list[(c - 1) % 12]
+    else:
+        print("NO")
+#     print(chord)
 
     # score every notes based on harmony rule (40%)
     for i in range(len(midi_msg)):  # TODO: if len==1
         if i % 2 == 0:
+#             print("------note {} {}-------".format(i, midi_msg[i].note))
             d = (midi_msg[i].time + midi_msg[i+1].time) / 480
-            
-            if midi_msg[i].note in ori_note: # keep original melody
-                score_harmony += (5 * d)
-
-            elif midi_msg[i].note not in ori_note:
-                score_harmony -= (5 * d) 
-            
+                       
             if midi_msg[i].note % 12 == chord[0]:  # if the note is chord root note
                 score_harmony += (5 * d)
+#                 print("note in chord", score_harmony)
             if midi_msg[i].note % 12 == chord[1]:  # if the note is 2nd note
-                score_harmony += (5 * d)
+                score_harmony += (3 * d)
+#                 print("note in chord", score_harmony)
             if midi_msg[i].note % 12 == chord[2]:  # if the note is 3rd note
-                score_harmony += (5 * d)
+                score_harmony += (3 * d)
+#                 print("note in chord", score_harmony)
                 
             if midi_msg[i].note % 12 not in chord: # note is not a chord note
-                score_harmony -= (5 * d)  
+                score_harmony -= (3 * d)  
+#                 print("note not in chord", score_harmony)
             
             if midi_msg[i].note % 12 not in scale_list:  # note not in the scale (C major)
-                score_harmony -= (5 * d) 
+                score_harmony -= (2 * d) 
+#                 print("note not in scale", score_harmony)
             
-            if midi_msg[i].note % 12 in scale_list:  # note in the scale (C major)
-                score_harmony += (5 * d)  
+#             if midi_msg[i].note % 12 in scale_list:  # note in the scale (C major)
+#                 score_harmony += (2 * d)  
+#                 print("note in scale", score_harmony)
                 
             if i < len(midi_msg) - 3 and abs(midi_msg[i].note - midi_msg[i+2].note) > 9:  # big jump notes
-                score_harmony -= (5 * abs(midi_msg[i].note - midi_msg[i+2].note) * d)        
-
-            if i < len(midi_msg) - 3 and abs(midi_msg[i].note - midi_msg[i+2].note) == 12:  # 8 d egree
-                score_harmony += (5 * d) 
+                score_harmony -= (2 * abs(midi_msg[i].note - midi_msg[i+2].note) * d)        
+#                 print("big jump note", score_harmony)
+#             print(score_harmony)
                 
+#             if i < len(midi_msg) - 3 and abs(midi_msg[i].note - midi_msg[i+2].note) == 0:  # repetitive notes
+#                 score_harmony -= (5 * d) 
+#                 print("repeated note", score_harmony)
+                     
+#             if midi_msg[i].note % 12 in surprise_list:
+#                 score_harmony += (3 * d)
+#                 print("surprising note", score_harmony)
+            
+#             ## 每個音和諧的degree
+#             harmony_list = harmony[midi_msg[i].note % 12]
+#             if i < len(midi_msg) - 3 and midi_msg[i+2].note - midi_msg[i].note in harmony_list:
+#                 score_harmony += (5 * d)        
+#                 print("note in harmony degree", score_harmony)
+#             if i < len(midi_msg) - 3 and midi_msg[i+2].note - midi_msg[i].note not in harmony_list:
+#                 score_harmony -= (5 * d)
+#                 print("note not in harmony degree", score_harmony)
 
-            ## 每個音和諧的degree
-            harmony_list = harmony[midi_msg[i].note % 12]
-            if i < len(midi_msg) - 3 and midi_msg[i+2].note - midi_msg[i].note in harmony_list:
-                score_harmony += (5 * d)        
-            if i < len(midi_msg) - 3 and midi_msg[i+2].note - midi_msg[i].note not in harmony_list:
-                score_harmony -= (5 * d)
-
-            # duration
-            if d < 2: 
-                score_harmony += 5  
-            if d > 2: 
-                score_harmony -= 5    
+#             # duration
+#             if i < len(midi_msg)-3:
+#                 d2 = (midi_msg[i+2].time + midi_msg[i+3].time) / 480
+#                 if abs(d2-d) >= 1.5: 
+#                     score_harmony -= (3 * abs(d2-d))   
+#                     print("long duration", score_harmony)
                     
     return score_harmony
+
+
+# def harmony_score(midi_msg, chord, ori_note): 
+#     score_harmony = 0
+    
+#     ## get chord note, ie: C major is CEG
+#     c = int(list(chord)[2])
+#     if c % 12 in C_pitch:
+#         chord = chord_list[c % 12]
+#     elif (c + 1) % 12 in C_pitch:
+#         chord = chord_list[(c + 1) % 12]
+#     elif (c - 1) % 12 in C_pitch:
+#         chord = chord_list[(c - 1) % 12]
+
+#     # score every notes based on harmony rule (40%)
+#     for i in range(len(midi_msg)):  # TODO: if len==1
+#         if i % 2 == 0:
+#             d = (midi_msg[i].time + midi_msg[i+1].time) / 480
+            
+#             if midi_msg[i].note in ori_note: # keep original melody
+#                 score_harmony += (5 * d)
+
+#             elif midi_msg[i].note not in ori_note:
+#                 score_harmony -= (5 * d) 
+            
+#             if midi_msg[i].note % 12 == chord[0]:  # if the note is chord root note
+#                 score_harmony += (5 * d)
+#             if midi_msg[i].note % 12 == chord[1]:  # if the note is 2nd note
+#                 score_harmony += (5 * d)
+#             if midi_msg[i].note % 12 == chord[2]:  # if the note is 3rd note
+#                 score_harmony += (5 * d)
+                
+#             if midi_msg[i].note % 12 not in chord: # note is not a chord note
+#                 score_harmony -= (5 * d)  
+            
+#             if midi_msg[i].note % 12 not in scale_list:  # note not in the scale (C major)
+#                 score_harmony -= (5 * d) 
+            
+#             if midi_msg[i].note % 12 in scale_list:  # note in the scale (C major)
+#                 score_harmony += (5 * d)  
+                
+#             if i < len(midi_msg) - 3 and abs(midi_msg[i].note - midi_msg[i+2].note) > 9:  # big jump notes
+#                 score_harmony -= (5 * abs(midi_msg[i].note - midi_msg[i+2].note) * d)        
+
+#             if i < len(midi_msg) - 3 and abs(midi_msg[i].note - midi_msg[i+2].note) == 12:  # 8 d egree
+#                 score_harmony += (5 * d) 
+                
+
+#             ## 每個音和諧的degree
+#             harmony_list = harmony[midi_msg[i].note % 12]
+#             if i < len(midi_msg) - 3 and midi_msg[i+2].note - midi_msg[i].note in harmony_list:
+#                 score_harmony += (5 * d)        
+#             if i < len(midi_msg) - 3 and midi_msg[i+2].note - midi_msg[i].note not in harmony_list:
+#                 score_harmony -= (5 * d)
+
+#             # duration
+#             if d < 2: 
+#                 score_harmony += 5  
+#             if d > 2: 
+#                 score_harmony -= 5    
+                    
+#     return score_harmony

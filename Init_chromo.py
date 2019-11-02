@@ -7,10 +7,57 @@ import copy
 from collections import Counter
 import random
 
+
+melody_series = [[0,-5,0,4],[0,0,0,0], [0,-8,-3,0],[0,0,0,0],[0,-9,-4,0],[0,-8,-3,0],[0,0,0,0], [0,-7,-3,0],[0,0,0,0], [0,-7,-4,0],[0,0,0,0],[0,-9,-4,0]]
+melody_series2 = [[0,-1,0,2],[0,0,0,0], [0,-5,-3,0],[0,0,0,0],[0,-4,-2,0],[0,-1,-3,0],[0,0,0,0], [0,-7,-5,0],[0,0,0,0], [0,-2,0,2],[0,0,0,0],[0,-2,-4,0]]
+melody_list = [melody_series, melody_series2]
+
  # 移調
 def shift_note(song, interval):
     temp = copy.deepcopy(song)
     return [temp[i].note + interval for i in range(len(temp))]
+
+# 決定和諧音 unsed temporary
+def get_chord(note):
+    choice_list = [4, 3, -3, -4]
+    if note % 12 == 0: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0.5,0,0.5,0])
+    elif note % 12 == 2: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0.5,0])
+    elif note % 12 == 4: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0,0.5])
+    elif note % 12 == 5: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0.5,0,0.5,0])
+    elif note % 12 == 7: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0.5,0,0.5,0])
+    elif note % 12 == 9: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0,0.5])
+    elif note % 12 == 11: 
+        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0,0.5])
+    else:
+        change_note = 0
+    return int(change_note)
+
+
+# 交換兩相鄰音符
+def exchange_note(song):
+    position = 1
+    temp = copy.deepcopy(song)
+    while position % 2 != 0:
+        position = random.randrange(2,len(temp)-2, 2)  
+    t = temp[position+2:position+4]
+    temp[position+2:position+4] = temp[position:position+2]
+    temp[position:position+2] = t    
+    return temp
+
+# # rotatation in one bar
+# def rotate_note(song):
+#     position = 1
+#     temp = copy.deepcopy(song)
+#     while position % 2 != 0:
+#         position = random.randrange(2,len(temp)-2, 2)  
+#     temp = temp[position: ] + temp[ :position]    
+#     return temp
 
 # 增加一個音
 def get_note(note):
@@ -33,20 +80,16 @@ def get_note(note):
         change_note = 0
     return int(change_note)
 
-
-def note_series(interval, _note, duration):
+def add_note_series(interval, _note, duration):
     m = []
     for i in range(len(interval)):
         m.append(mido.Message('note_on', velocity = 105, note = _note + interval[i], time = 1))
         m.append(mido.Message('note_on', velocity = 0, note = _note + interval[i], time = duration - 1))
     return m
   
-melody_series = [[0,-5,0,4],[0,0,0,0], [0,-8,-3,0],[0,0,0,0],[0,-9,-4,0],[0,-8,-3,0],[0,0,0,0], [0,-7,-3,0],[0,0,0,0], [0,-7,-4,0],[0,0,0,0],[0,-9,-4,0]]
-melody_series2 = [[0,-1,0,2],[0,0,0,0], [0,-5,-3,0],[0,0,0,0],[0,-4,-2,0],[0,-1,-3,0],[0,0,0,0], [0,-7,-5,0],[0,0,0,0], [0,-2,0,2],[0,0,0,0],[0,-2,-4,0]]
-melody_list = [melody_series, melody_series2]
 
 def add_melody(song):
-    position = 2
+    position = random.randrange(2,len(song)-2, 2)
     temp = copy.deepcopy(song)
     # 將長度為四分音符的分解為4個16分音符
     while temp[position].time + temp[position+1].time < 240:
@@ -61,30 +104,9 @@ def add_melody(song):
     
     # 替換成4個16分音符
     interval = melody_series[idx]
-    m = note_series(interval, _note, int(t/4))
+    m = add_note_series(interval, _note, int(t/4))
     temp[position:position] = m   
     return temp
-
-# 決定和諧音
-def get_chord(note):
-    choice_list = [4, 3, -3, -4]
-    if note % 12 == 0: 
-        change_note = np.random.choice(choice_list, 1, replace=False, p=[0.5,0,0.5,0])
-    elif note % 12 == 2: 
-        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0.5,0])
-    elif note % 12 == 4: 
-        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0,0.5])
-    elif note % 12 == 5: 
-        change_note = np.random.choice(choice_list, 1, replace=False, p=[0.5,0,0.5,0])
-    elif note % 12 == 7: 
-        change_note = np.random.choice(choice_list, 1, replace=False, p=[0.5,0,0.5,0])
-    elif note % 12 == 9: 
-        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0,0.5])
-    elif note % 12 == 11: 
-        change_note = np.random.choice(choice_list, 1, replace=False, p=[0,0.5,0,0.5])
-    else:
-        change_note = 0
-    return int(change_note)
 
 
 # 移除某些音
@@ -115,16 +137,24 @@ def add_note(song):
         position = random.randrange(2,len(temp)-2, 2)
     _note = temp[position].note
     idx = _note % 12 
+    
     # 移除選中的四分音符
     del temp[position]
     del temp[position]
     
     _note = get_note(temp[position].note)
-    
-#     # add note
     m = []
     m.append(mido.Message('note_on', velocity = 105, note = _note + temp[position].note, time = 1))
     m.append(mido.Message('note_on', velocity = 0, note = _note + temp[position].note, time = 119))
     temp[position:position] = m  
     return temp
 
+## TODO
+# rotatation in one bar
+def rotate_note(song):
+    position = 1
+    temp = copy.deepcopy(song)
+    while position % 2 != 0:
+        position = random.randrange(2,len(temp)-2, 2)  
+    temp = temp[position: ] + temp[ :position]    
+    return temp
