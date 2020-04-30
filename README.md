@@ -5,6 +5,7 @@
  - Init_chrommo.py : Initial operator in GA
  - Parsing_midi.py : parse mIDI file into text (note, time)
  - count_CE.py : Chord analysis, get the chord for each bar
+ - cal_score.py : Calculate fitness score in GA
 
 
 ### Ref Paper: Real-Time Pitch Spelling Using the Spiral Array. 
