@@ -1,6 +1,6 @@
 # Music_information_retrieval
 
-#### FUnction
+#### Function
  - GA_v3 : Main function in GA to improvise music
  - Init_chrommo.py : Initial operator in GA
  - Parsing_midi.py : parse mIDI file into text (note, time)
